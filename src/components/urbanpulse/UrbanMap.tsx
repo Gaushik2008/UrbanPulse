@@ -18,9 +18,9 @@ export function UrbanMap({coverage=false, route=false, compact=false}:{coverage?
    <div className="control-group"><Layers3 className="size-3.5 text-muted-foreground" />{[coverage?"Coverage":"Road condition","Bus routes","Detections"].map(v=><button key={v} onClick={()=>setLayer(v)} className={cn("control-chip",layer===v&&"control-chip-active")}>{v}</button>)}</div>
   </div>
   <svg viewBox="0 0 1020 660" className="h-full w-full" role="img" aria-label="Interactive demonstration map of Chennai road observations">
-   <rect width="1020" height="660" className="fill-map"/>
-   <path d="M0 85 H1020 M0 245 H1020 M0 420 H1020 M0 590 H1020 M180 0 V660 M360 0 V660 M600 0 V660 M835 0 V660" className="stroke-map-grid" strokeWidth="1"/>
-   <path d="M0 115 C180 160 280 75 430 115 S760 230 1020 120 M0 390 C200 330 320 440 520 380 S790 300 1020 350 M260 0 C240 170 340 270 300 660 M780 0 C760 190 690 300 820 660" className="fill-none stroke-map-road" strokeWidth="18"/>
+   <rect width="1020" height="660" className="pointer-events-none fill-map"/>
+   <path d="M0 85 H1020 M0 245 H1020 M0 420 H1020 M0 590 H1020 M180 0 V660 M360 0 V660 M600 0 V660 M835 0 V660" className="pointer-events-none stroke-map-grid" strokeWidth="1"/>
+   <path d="M0 115 C180 160 280 75 430 115 S760 230 1020 120 M0 390 C200 330 320 440 520 380 S790 300 1020 350 M260 0 C240 170 340 270 300 660 M780 0 C760 190 690 300 820 660" className="pointer-events-none fill-none stroke-map-road" strokeWidth="18"/>
    {roads.map(r=><g key={r.id} onClick={()=>setSelected(r)} className="cursor-pointer outline-none" role="button" tabIndex={0} onKeyDown={e=>{if(e.key==='Enter')setSelected(r)}} aria-label={`${r.name}, ${statusLabel[r.status]}`}>
     <path d={r.path} className="fill-none stroke-map-casing" strokeWidth={selected?.id===r.id?13:10}/>
     <path d={r.path} className={cn("fill-none transition-all duration-300",statusClass[r.status],r.status==="unknown"&&"stroke-dashed")} strokeWidth={selected?.id===r.id?8:6}/>
