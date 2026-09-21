@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { ArrowRight, BusFront, Camera, Check, CheckCircle2, ChevronRight, CircleAlert, Clock3, Download, MapPin, Navigation, Radar, Route, ScanLine, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, BusFront, Camera, Check, CheckCircle2, ChevronRight, CircleAlert, ClipboardCheck, Clock3, Download, MapPin, Navigation, Radar, Route, ScanLine, ShieldCheck } from "lucide-react";
 import beforeImage from "@/assets/anna-salai-pothole.jpg";
 import afterImage from "@/assets/anna-salai-repaired.jpg";
 import { AppShell, Page } from "./AppShell";

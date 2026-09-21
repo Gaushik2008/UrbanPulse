@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const statusClass: Record<RoadStatus,string> = {healthy:"stroke-success",observed:"stroke-info",aging:"stroke-warning",attention:"stroke-warning",critical:"stroke-destructive",unknown:"stroke-unknown"};
+const dotClass: Record<RoadStatus,string> = {healthy:"bg-success",observed:"bg-info",aging:"bg-warning",attention:"bg-warning",critical:"bg-destructive",unknown:"bg-unknown"};
 const statusLabel: Record<RoadStatus,string> = {healthy:"Healthy",observed:"Observed",aging:"Aging",attention:"Attention",critical:"Critical",unknown:"Unknown"};
 
 export function UrbanMap({coverage=false, route=false, compact=false}:{coverage?:boolean;route?:boolean;compact?:boolean}) {
@@ -29,7 +30,7 @@ export function UrbanMap({coverage=false, route=false, compact=false}:{coverage?
    {route&&<><path d="M210 525 C330 455 430 470 510 405 S650 300 770 215" className="fill-none stroke-primary" strokeWidth="5" strokeDasharray="10 8"/>{[{x:210,y:525,n:"D"},{x:370,y:455,n:"1"},{x:510,y:405,n:"2"},{x:650,y:300,n:"3"},{x:770,y:215,n:"4"}].map(p=><g key={p.n} transform={`translate(${p.x} ${p.y})`}><circle r="16" className="fill-foreground stroke-background" strokeWidth="3"/><text textAnchor="middle" y="5" className="fill-background text-xs font-bold">{p.n}</text></g>)}</>}
   </svg>
   <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-3 rounded-md border border-border bg-background/95 px-3 py-2 text-[11px] shadow-sm backdrop-blur-sm">
-   {(["healthy","observed","aging","critical","unknown"] as RoadStatus[]).map(s=><span key={s} className="flex items-center gap-1.5"><i className={cn("size-2 rounded-full",`bg-${s}`)}/>{statusLabel[s]}</span>)}
+   {(["healthy","observed","aging","critical","unknown"] as RoadStatus[]).map(s=><span key={s} className="flex items-center gap-1.5"><i className={cn("size-2 rounded-full",dotClass[s])}/>{statusLabel[s]}</span>)}
   </div>
   <div className="absolute bottom-4 right-4 z-10 flex flex-col border border-border bg-background shadow-sm"><Button variant="ghost" size="icon" aria-label="Zoom in"><Plus/></Button><Button variant="ghost" size="icon" aria-label="Zoom out"><Minus/></Button><Button variant="ghost" size="icon" aria-label="Locate"><LocateFixed/></Button></div>
   {selected&&<aside className="absolute inset-y-0 right-0 z-20 w-full max-w-sm border-l border-border bg-background p-5 shadow-panel animate-in slide-in-from-right duration-200">
