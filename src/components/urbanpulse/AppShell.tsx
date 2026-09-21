@@ -1,0 +1,20 @@
+import { Link, useRouterState } from "@tanstack/react-router";
+import { Activity, BarChart3, BusFront, CheckCircle2, ClipboardCheck, LayoutDashboard, Map, MapPinned, Menu, Radar, Settings, ShieldCheck, X } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+const nav=[
+ {to:"/overview",label:"Overview",icon:LayoutDashboard},{to:"/city-map",label:"City Map",icon:Map},{to:"/detections",label:"Detections",icon:Radar},{to:"/coverage",label:"Coverage",icon:MapPinned},{to:"/inspection",label:"Inspection",icon:ClipboardCheck},{to:"/verification",label:"Verification",icon:ShieldCheck},{to:"/analytics",label:"Analytics",icon:BarChart3},{to:"/fleet",label:"Fleet",icon:BusFront},
+] as const;
+export function Brand({compact=false}:{compact?:boolean}){return <Link to="/" className="flex items-center gap-2.5 font-semibold"><span className="grid size-8 place-items-center rounded-md bg-primary text-primary-foreground"><Activity className="size-4"/></span>{!compact&&<span>UrbanPulse <b className="font-medium text-primary">AI</b></span>}</Link>}
+export function AppShell({children,title,subtitle}:{children:ReactNode;title:string;subtitle:string}){
+ const path=useRouterState({select:s=>s.location.pathname}); const [open,setOpen]=useState(false);
+ return <div className="min-h-screen bg-background text-foreground">
+  <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 border-r border-border bg-sidebar lg:flex lg:flex-col"><div className="px-5 py-5"><Brand/></div><nav className="flex-1 space-y-1 px-3" aria-label="Main navigation">{nav.map(n=><Link key={n.to} to={n.to} className={cn("nav-link",path===n.to&&"nav-link-active")}><n.icon/>{n.label}</Link>)}</nav><div className="space-y-1 border-t border-border p-3"><div className="nav-link"><CheckCircle2 className="text-success"/><span className="flex-1">System Status</span><span className="size-1.5 rounded-full bg-success"/></div><div className="nav-link"><Settings/>Settings</div><div className="mt-3 flex items-center gap-3 px-3 py-2"><span className="grid size-8 place-items-center rounded-full bg-secondary text-xs font-semibold">GK</span><div className="min-w-0"><p className="truncate text-sm font-medium">Gaushik Kumar</p><p className="text-xs text-muted-foreground">Municipal Admin</p></div></div></div></aside>
+  <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur lg:ml-60 lg:px-8"><div className="flex items-center gap-3"><Button className="lg:hidden" variant="ghost" size="icon" onClick={()=>setOpen(!open)} aria-label="Open menu">{open?<X/>:<Menu/>}</Button><div><h1 className="text-lg font-semibold lg:text-xl">{title}</h1><p className="hidden text-xs text-muted-foreground sm:block">{subtitle}</p></div></div><div className="flex items-center gap-3"><span className="demo-label">Demo data</span><span className="hidden items-center gap-2 text-xs text-muted-foreground md:flex"><i className="size-2 rounded-full bg-success"/>All systems operational</span><span className="hidden text-xs tabular-nums text-muted-foreground xl:block">21 Sep 2026 · 20:39 IST</span></div></header>
+  {open&&<nav className="fixed inset-x-0 top-16 z-40 grid grid-cols-2 gap-1 border-b border-border bg-background p-3 shadow-panel lg:hidden">{nav.map(n=><Link key={n.to} to={n.to} onClick={()=>setOpen(false)} className={cn("nav-link",path===n.to&&"nav-link-active")}><n.icon/>{n.label}</Link>)}</nav>}
+  <main className="pb-20 lg:ml-60 lg:pb-0">{children}</main>
+  <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-background lg:hidden" aria-label="Mobile navigation">{nav.slice(1,6).map(n=><Link key={n.to} to={n.to} className={cn("mobile-nav",path===n.to&&"text-primary")}><n.icon/><span>{n.label==="City Map"?"Map":n.label}</span></Link>)}</nav>
+ </div>
+}
+export function Page({children}:{children:ReactNode}){return <div className="mx-auto max-w-[1500px] p-4 sm:p-6 lg:p-8">{children}</div>}
