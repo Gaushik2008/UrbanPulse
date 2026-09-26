@@ -1,4 +1,4 @@
-# UrbanPulse AI
+# UrbanPulse
 - [x] Establish the civic visual system and demo data model
 - [x] Build landing page and responsive application navigation
 - [x] Build overview and interactive city map

@@ -1,4 +1,4 @@
-# UrbanPulse AI implementation plan
+# UrbanPulse implementation plan
 
 ## Product outcome
 Build a polished, responsive civic road-intelligence demo that makes the closed loop immediately clear:

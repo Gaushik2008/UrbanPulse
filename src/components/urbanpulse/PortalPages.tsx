@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const kpis=[{l:"Road Network Observed",v:"72.4%",d:"+4.8% this week",good:true},{l:"Active Detections",v:"184",d:"32 high priority"},{l:"Coverage Gaps",v:"27",d:"requiring inspection"},{l:"Routes Monitored",v:"18",d:"of 24 active"},{l:"Verification Rate",v:"91%",d:"after repair",good:true}];
-export function OverviewPage(){return <AppShell title="UrbanPulse AI" subtitle="Continuous road intelligence from the city's moving fleet."><Page>
+export function OverviewPage(){return <AppShell title="UrbanPulse" subtitle="Continuous road intelligence from the city's moving fleet."><Page>
  <section className="kpi-strip">{kpis.map((k,i)=><div className="kpi" key={k.l}><div><p>{k.l}</p><strong>{k.v}</strong></div><span className={k.good?"text-success":""}>{k.d}</span>{i===0&&<div className="absolute inset-x-0 bottom-0 h-0.5 bg-success"/>}</div>)}</section>
  <section className="mt-6"><div className="section-heading"><div><p className="eyebrow">Live operational picture</p><h2>City Road Intelligence</h2></div><span className="flex items-center gap-2 text-xs text-muted-foreground"><span className="size-2 rounded-full bg-info"/>428 observations in the last hour</span></div><UrbanMap/></section>
  <div className="mt-6 grid gap-6 xl:grid-cols-[1.4fr_1fr]"><Pipeline/><FleetMini/></div>
