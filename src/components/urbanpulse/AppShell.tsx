@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 const nav=[
  {to:"/overview",label:"Overview",icon:LayoutDashboard},{to:"/city-map",label:"City Map",icon:Map},{to:"/detections",label:"Detections",icon:Radar},{to:"/coverage",label:"Coverage",icon:MapPinned},{to:"/inspection",label:"Inspection",icon:ClipboardCheck},{to:"/verification",label:"Verification",icon:ShieldCheck},{to:"/analytics",label:"Analytics",icon:BarChart3},{to:"/fleet",label:"Fleet",icon:BusFront},
 ] as const;
-export function Brand({compact=false}:{compact?:boolean}){return <Link to="/" className="flex items-center gap-2.5 font-semibold"><span className="grid size-8 place-items-center rounded-md bg-primary text-primary-foreground"><Activity className="size-4"/></span>{!compact&&<span>UrbanPulse <b className="font-medium text-primary">AI</b></span>}</Link>}
+export function Brand({compact=false}:{compact?:boolean}){return <Link to="/" className="flex items-center gap-2.5 font-semibold"><span className="grid size-8 place-items-center rounded-md bg-primary text-primary-foreground"><Activity className="size-4"/></span>{!compact&&<span>UrbanPulse</span>}</Link>}
 export function AppShell({children,title,subtitle}:{children:ReactNode;title:string;subtitle:string}){
  const path=useRouterState({select:s=>s.location.pathname}); const [open,setOpen]=useState(false);
  return <div className="min-h-screen bg-background text-foreground">

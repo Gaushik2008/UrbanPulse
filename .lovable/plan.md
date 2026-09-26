@@ -1,4 +1,4 @@
-# UrbanPulse AI product demo upgrade
+# UrbanPulse product demo upgrade
 
 ## Outcome
 Transform the existing concept into a cohesive, interactive municipal operations demonstration while preserving its brand, semantic colors, demo dataset, routes, and coverage-first product story.

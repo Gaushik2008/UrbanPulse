@@ -77,10 +77,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "UrbanPulse AI" },
+      { title: "UrbanPulse" },
       { name: "description", content: "Continuous road intelligence from the city’s moving fleet." },
-      { name: "author", content: "UrbanPulse AI" },
-      { property: "og:title", content: "UrbanPulse AI" },
+      { name: "author", content: "UrbanPulse" },
+      { property: "og:title", content: "UrbanPulse" },
       { property: "og:description", content: "Continuous road intelligence from the city’s moving fleet." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
