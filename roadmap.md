@@ -8,3 +8,5 @@
 - [x] Build repair verification and road history
 - [x] Build analytics and fleet views
 - [x] Add route metadata and validate desktop/mobile interactions
+- [x] Replace the illustrated city map with Google Maps
+- [x] Add Chennai bus 62 Poonamallee–Red Hills road route and simulated bus movement

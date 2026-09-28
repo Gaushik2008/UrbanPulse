@@ -1,45 +1,192 @@
-import { useState } from "react";
-import { Bus, ChevronRight, Layers3, LocateFixed, Minus, Plus, X } from "lucide-react";
-import { roads, type RoadSegment, type RoadStatus } from "@/lib/demo-data";
+import { useEffect, useRef, useState } from "react";
+import { BusFront, CircleAlert, LocateFixed, Minus, Plus, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const statusClass: Record<RoadStatus,string> = {healthy:"stroke-success",observed:"stroke-info",aging:"stroke-warning",attention:"stroke-warning",critical:"stroke-destructive",unknown:"stroke-unknown"};
-const dotClass: Record<RoadStatus,string> = {healthy:"bg-success",observed:"bg-info",aging:"bg-warning",attention:"bg-warning",critical:"bg-destructive",unknown:"bg-unknown"};
-const statusLabel: Record<RoadStatus,string> = {healthy:"Healthy",observed:"Observed",aging:"Aging",attention:"Attention",critical:"Critical",unknown:"Unknown"};
+type LatLng = { lat: number; lng: number };
+type MapInstance = {
+  fitBounds: (bounds: unknown, padding?: number) => void;
+  panTo: (position: LatLng) => void;
+  setZoom: (zoom: number) => void;
+  getZoom: () => number | undefined;
+};
+type MarkerInstance = { setPosition: (position: LatLng) => void; setMap: (map: MapInstance | null) => void };
+type GoogleMapsApi = {
+  Map: new (element: HTMLElement, options: Record<string, unknown>) => MapInstance;
+  Marker: new (options: Record<string, unknown>) => MarkerInstance;
+  Polyline: new (options: Record<string, unknown>) => { setMap: (map: MapInstance | null) => void };
+  LatLngBounds: new () => { extend: (position: LatLng) => void };
+  SymbolPath: { CIRCLE: unknown };
+  geometry: { encoding: { decodePath: (encoded: string) => LatLng[] } };
+};
 
-export function UrbanMap({coverage=false, route=false, compact=false}:{coverage?:boolean;route?:boolean;compact?:boolean}) {
- const [selected,setSelected]=useState<RoadSegment|null>(null);
- const [layer,setLayer]=useState(coverage?"Coverage":"Road condition");
- const [period,setPeriod]=useState("Live");
- return <div className={cn("map-shell relative overflow-hidden border border-border bg-map",compact?"h-[420px]":"h-[560px]")}>
-  <div className="absolute left-4 top-4 z-10 flex max-w-[calc(100%-2rem)] flex-wrap gap-2">
-   {!coverage && <div className="control-group">{["Live","24h","7d","30d"].map(v=><button key={v} onClick={()=>setPeriod(v)} className={cn("control-chip",period===v&&"control-chip-active")}>{v}</button>)}</div>}
-   <div className="control-group"><Layers3 className="size-3.5 text-muted-foreground" />{[coverage?"Coverage":"Road condition","Bus routes","Detections"].map(v=><button key={v} onClick={()=>setLayer(v)} className={cn("control-chip",layer===v&&"control-chip-active")}>{v}</button>)}</div>
-  </div>
-  <svg viewBox="0 0 1020 660" className="h-full w-full" role="img" aria-label="Interactive demonstration map of Chennai road observations">
-   <rect width="1020" height="660" className="pointer-events-none fill-map"/>
-   <path d="M0 85 H1020 M0 245 H1020 M0 420 H1020 M0 590 H1020 M180 0 V660 M360 0 V660 M600 0 V660 M835 0 V660" className="pointer-events-none stroke-map-grid" strokeWidth="1"/>
-   <path d="M0 115 C180 160 280 75 430 115 S760 230 1020 120 M0 390 C200 330 320 440 520 380 S790 300 1020 350 M260 0 C240 170 340 270 300 660 M780 0 C760 190 690 300 820 660" className="pointer-events-none fill-none stroke-map-road" strokeWidth="18"/>
-   {roads.map(r=><g key={r.id} onClick={()=>setSelected(r)} className="cursor-pointer outline-none" role="button" tabIndex={0} onKeyDown={e=>{if(e.key==='Enter')setSelected(r)}} aria-label={`${r.name}, ${statusLabel[r.status]}`}>
-    <path d={r.path} className="fill-none stroke-map-casing" strokeWidth={selected?.id===r.id?13:10}/>
-    <path d={r.path} className={cn("fill-none transition-all duration-300",statusClass[r.status],r.status==="unknown"&&"stroke-dashed")} strokeWidth={selected?.id===r.id?8:6}/>
-   </g>)}
-   <text x="62" y="44" className="map-label">PERAMBUR</text><text x="438" y="380" className="map-label">T. NAGAR</text><text x="736" y="458" className="map-label">ADYAR</text><text x="185" y="455" className="map-label">MYLAPORE</text>
-   {[{x:290,y:270,n:"04"},{x:540,y:185,n:"07"},{x:700,y:440,n:"11"}].map(b=><g key={b.n} transform={`translate(${b.x} ${b.y})`}><circle r="15" className="fill-primary stroke-primary-foreground" strokeWidth="3"/><text textAnchor="middle" y="4" className="fill-primary-foreground text-[10px] font-bold">{b.n}</text></g>)}
-   {route&&<><path d="M210 525 C330 455 430 470 510 405 S650 300 770 215" className="fill-none stroke-primary" strokeWidth="5" strokeDasharray="10 8"/>{[{x:210,y:525,n:"D"},{x:370,y:455,n:"1"},{x:510,y:405,n:"2"},{x:650,y:300,n:"3"},{x:770,y:215,n:"4"}].map(p=><g key={p.n} transform={`translate(${p.x} ${p.y})`}><circle r="16" className="fill-foreground stroke-background" strokeWidth="3"/><text textAnchor="middle" y="5" className="fill-background text-xs font-bold">{p.n}</text></g>)}</>}
-  </svg>
-  <div className="absolute bottom-4 left-4 z-10 flex flex-wrap gap-3 rounded-md border border-border bg-background/95 px-3 py-2 text-[11px] shadow-sm backdrop-blur-sm">
-   {(["healthy","observed","aging","critical","unknown"] as RoadStatus[]).map(s=><span key={s} className="flex items-center gap-1.5"><i className={cn("size-2 rounded-full",dotClass[s])}/>{statusLabel[s]}</span>)}
-  </div>
-  <div className="absolute bottom-4 right-4 z-10 flex flex-col border border-border bg-background shadow-sm"><Button variant="ghost" size="icon" aria-label="Zoom in"><Plus/></Button><Button variant="ghost" size="icon" aria-label="Zoom out"><Minus/></Button><Button variant="ghost" size="icon" aria-label="Locate"><LocateFixed/></Button></div>
-  {selected&&<aside className="absolute inset-y-0 right-0 z-20 w-full max-w-sm border-l border-border bg-background p-5 shadow-panel animate-in slide-in-from-right duration-200">
-   <div className="flex items-start justify-between"><div><p className="eyebrow">Road segment</p><h3 className="mt-1 text-lg font-semibold">{selected.name}</h3><p className="text-sm text-muted-foreground">{selected.code}</p></div><Button variant="ghost" size="icon" onClick={()=>setSelected(null)} aria-label="Close road details"><X/></Button></div>
-   <div className="mt-6 flex items-center justify-between border-y border-border py-4"><span className="text-sm text-muted-foreground">Status</span><Status status={selected.status}/></div>
-   <dl className="detail-list"><div><dt>Last observed</dt><dd>{selected.lastObserved}</dd></div><div><dt>Observation frequency</dt><dd>{selected.frequency}</dd></div><div><dt>Road health</dt><dd>{selected.health||"—"} / 100</dd></div><div><dt>Issue detected</dt><dd>{selected.issue||"No active issue"}</dd></div><div><dt>Traffic exposure</dt><dd>{selected.traffic}</dd></div><div><dt>Risk score</dt><dd>{selected.risk}</dd></div></dl>
-   <div className="mt-5 border border-warning/30 bg-warning-soft p-4"><p className="eyebrow text-warning-foreground">Next recommended action</p><p className="mt-1 font-semibold">{selected.status==="unknown"?"Schedule observation route":"Inspect within 24 hours"}</p></div>
-   <div className="mt-5 grid gap-2"><Button> Create inspection <ChevronRight/></Button><Button variant="outline">View history</Button><Button variant="ghost">View detections</Button></div>
-  </aside>}
- </div>
+declare global {
+  interface Window {
+    google?: { maps: GoogleMapsApi };
+    initUrbanPulseMap?: () => void;
+  }
 }
-export function Status({status}:{status:RoadStatus}){return <span className={cn("status-badge",`status-${status}`)}><i/>{statusLabel[status]}</span>}
+
+const ROUTE_62_POLYLINE = "khsnAcnzgNYAF}AAyA?]GQYILoCFqCgFCyBE}CA{BEq@zGC|CNpELj@fApDl@`CPdBVnA`@`EX`Cd@pC`@zBb@dBDb@AN\\bEPvDFr@\\|Bb@|BnAtE`Az@`@Pb@Bb@C`@QXYR_@Fe@Ce@Ka@SWa@Yi@Mi@Ao@FmF|A}[tIgCr@aC~@aAf@mTxMsV~MqBhAiIjEoK~F}Q`KoLnG}EdC_FnCsDnBqHdEeHrDaE~BsIrF_ErCcDdCyKlJ}DnD}GxG{HnGaQhMsCfBiBbAuAh@{Ah@kCr@kB^yBXcCRuBH{CA_`@iAsDC}@@iL\\wBDgKFwHP_Vn@{E@_QP{C?]?e@GwDKiEU_Jo@eHY}GMmPSiH[eBCqJF_QUyL_@sDUqCI_ECcg@_BuBMmBS{Ba@sBk@qBw@aBy@mBsAmMoKyEuDeLyIqPcNqFoEcBkAyCaBcQkI}O{HeMgGoCyAeBgAmCqBcC}ByBgCcBaC{AgC{AcDmA_D[_AcAiEc@sBa@yC]eEcAyP}@yMg@qHUkGScDq@_Im@sFk@qHIwA]aEqDad@uBu\\qAeMoAaPS_DwBqXq@iJWsFEmC@wDJgEj@}IfBqVp@_HvDsZvAqMxCwYb@wFJcDByCKsCIqAUgBU{Aw@iDaAwCm@uAcAoB{BiDqA{AqBeBoCsBu@e@yBgAeMcFaFoBkAa@yBaA_JgD}HaDwFqCuEkC{CoBwEiDsRsMoGqEwRuNiKcHeM{IgFyD_LgIqDiDs@y@yAwBqBqDm@yAkEoMg@{Ae@}@_@[a@K]A_@Fa@RUZMb@An@Hf@PX\\v@Z~@JtAo@j@[f@e@~@c@l@Dh@JZBh@GxAYd@?hHiBnF_BdEcBn@]~Aq@bJ{EdF_DdOiKnJqGvIiGr@o@lA_Bl@cAXw@VHb@FPFzGiGvAqA~GaG";
+
+const routeStops = [
+  { name: "Poonamallee", position: { lat: 13.0518, lng: 80.0949 } },
+  { name: "Avadi", position: { lat: 13.12, lng: 80.1022 } },
+  { name: "Ambattur O.T.", position: { lat: 13.1197, lng: 80.1501 } },
+  { name: "Pudur", position: { lat: 13.1366, lng: 80.1601 } },
+  { name: "Surapet", position: { lat: 13.1605, lng: 80.1764 } },
+  { name: "Red Hills", position: { lat: 13.19, lng: 80.18 } },
+];
+const firstRouteStop = { name: "Poonamallee", position: { lat: 13.0518, lng: 80.0949 } };
+
+const detectionPoints = [
+  { lat: 13.105, lng: 80.101 },
+  { lat: 13.135, lng: 80.157 },
+  { lat: 13.172, lng: 80.181 },
+];
+
+let mapsPromise: Promise<GoogleMapsApi> | null = null;
+function loadGoogleMaps() {
+  if (window.google?.maps) return Promise.resolve(window.google.maps);
+  if (mapsPromise) return mapsPromise;
+  mapsPromise = new Promise((resolve, reject) => {
+    window.initUrbanPulseMap = () => {
+      if (window.google?.maps) resolve(window.google.maps);
+      else reject(new Error("Google Maps did not initialize"));
+    };
+    const key = import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY"];
+    const channel = import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID"];
+    if (!key) {
+      reject(new Error("Google Maps connection is unavailable"));
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&loading=async&callback=initUrbanPulseMap&libraries=geometry&channel=${encodeURIComponent(channel ?? "urbanpulse")}`;
+    script.async = true;
+    script.onerror = () => reject(new Error("Google Maps could not be loaded"));
+    document.head.appendChild(script);
+  });
+  return mapsPromise;
+}
+
+export function UrbanMap({ coverage = false, route = false, compact = false }: { coverage?: boolean; route?: boolean; compact?: boolean }) {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<MapInstance | null>(null);
+  const busRef = useRef<MarkerInstance | null>(null);
+  const pathRef = useRef<LatLng[]>([]);
+  const [period, setPeriod] = useState("Live");
+  const [filter, setFilter] = useState(coverage ? "Coverage" : "All");
+  const [query, setQuery] = useState("");
+  const [selectedStop, setSelectedStop] = useState(firstRouteStop);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    const overlays: Array<{ setMap: (map: MapInstance | null) => void }> = [];
+    let animation = 0;
+    loadGoogleMaps().then((maps) => {
+      if (!active || !hostRef.current) return;
+      const styles = getComputedStyle(document.documentElement);
+      const routeColor = styles.getPropertyValue("--map-route").trim();
+      const criticalColor = styles.getPropertyValue("--map-critical").trim();
+      const map = new maps.Map(hostRef.current, {
+        center: { lat: 13.12, lng: 80.14 },
+        zoom: 12,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        zoomControl: false,
+        clickableIcons: false,
+        gestureHandling: "greedy",
+        styles: [{ featureType: "poi", stylers: [{ visibility: "off" }] }],
+      });
+      mapRef.current = map;
+      const path = maps.geometry.encoding.decodePath(ROUTE_62_POLYLINE);
+      pathRef.current = path;
+      const bounds = new maps.LatLngBounds();
+      path.forEach((point) => bounds.extend(point));
+      const casing = new maps.Polyline({ path, strokeColor: styles.getPropertyValue("--map-route-casing").trim(), strokeOpacity: 0.92, strokeWeight: 9, map });
+      const line = new maps.Polyline({ path, strokeColor: routeColor, strokeOpacity: 1, strokeWeight: 5, map });
+      overlays.push(casing, line);
+      routeStops.forEach((stop, index) => {
+        const marker = new maps.Marker({
+          map,
+          position: stop.position,
+          title: `${index === 0 ? "Start" : index === routeStops.length - 1 ? "End" : "Stop"}: ${stop.name}`,
+          label: index === 0 ? "A" : index === routeStops.length - 1 ? "B" : undefined,
+          icon: index > 0 && index < routeStops.length - 1 ? { path: maps.SymbolPath.CIRCLE, scale: 4, fillColor: routeColor, fillOpacity: 1, strokeColor: styles.getPropertyValue("--map-marker-ring").trim(), strokeWeight: 2 } : undefined,
+        });
+        overlays.push(marker);
+      });
+      detectionPoints.forEach((position) => {
+        const marker = new maps.Marker({ map, position, title: "Illustrative road detection", icon: { path: maps.SymbolPath.CIRCLE, scale: 7, fillColor: criticalColor, fillOpacity: 0.9, strokeColor: styles.getPropertyValue("--map-marker-ring").trim(), strokeWeight: 3 } });
+        overlays.push(marker);
+      });
+      const firstPathPoint = path[0];
+      if (!firstPathPoint) throw new Error("Route 62 geometry is unavailable");
+      const bus = new maps.Marker({ map, position: firstPathPoint, title: "Simulated bus 62 position", label: "62" });
+      busRef.current = bus;
+      overlays.push(bus);
+      map.fitBounds(bounds, compact ? 38 : 64);
+      let step = 0;
+      const moveBus = () => {
+        if (!active || path.length === 0) return;
+        step = (step + 1) % path.length;
+        const nextPoint = path[step];
+        if (nextPoint) bus.setPosition(nextPoint);
+        animation = window.setTimeout(moveBus, 240);
+      };
+      animation = window.setTimeout(moveBus, 700);
+    }).catch((error: unknown) => {
+      if (active) setLoadError(error instanceof Error ? error.message : "Google Maps could not be loaded");
+    });
+    return () => {
+      active = false;
+      window.clearTimeout(animation);
+      overlays.forEach((overlay) => overlay.setMap(null));
+      mapRef.current = null;
+      busRef.current = null;
+    };
+  }, [compact]);
+
+  const selectStop = (stop: (typeof routeStops)[number]) => {
+    setSelectedStop(stop);
+    mapRef.current?.panTo(stop.position);
+    mapRef.current?.setZoom(14);
+  };
+  const submitSearch = (event: React.FormEvent) => {
+    event.preventDefault();
+    const match = routeStops.find((stop) => stop.name.toLowerCase().includes(query.trim().toLowerCase()));
+    if (match) selectStop(match);
+  };
+
+  return <div className={cn("map-shell google-map-shell relative overflow-hidden border border-border bg-map", compact ? "h-[420px]" : "h-[560px]")}>
+    <div ref={hostRef} className="absolute inset-0" aria-label="Google Map showing Chennai bus route 62 from Poonamallee to Red Hills" />
+    {loadError && <div className="absolute inset-0 grid place-items-center bg-secondary p-8 text-center"><div><CircleAlert className="mx-auto mb-3 text-warning"/><strong>Map unavailable</strong><p className="mt-1 text-sm text-muted-foreground">{loadError}</p></div></div>}
+    <div className="absolute left-3 right-3 top-3 z-10 flex flex-wrap items-start justify-between gap-2 pointer-events-none">
+      <form onSubmit={submitSearch} className="map-search pointer-events-auto">
+        <Search aria-hidden="true"/><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search route stop…" aria-label="Search route stop"/><Button type="submit" size="icon" variant="ghost" aria-label="Search"><Search/></Button>
+      </form>
+      <div className="control-group pointer-events-auto">{["Live", "24h", "7d", "30d"].map((value) => <Button key={value} type="button" size="sm" variant="ghost" onClick={() => setPeriod(value)} className={cn("control-chip h-auto", period === value && "control-chip-active")}>{value}</Button>)}</div>
+    </div>
+    <div className="absolute bottom-3 left-3 z-10 max-w-[calc(100%-5rem)] pointer-events-none">
+      <div className="map-route-card pointer-events-auto">
+        <div className="flex items-center justify-between gap-3"><span className="flex items-center gap-2"><BusFront/> <strong>Route 62</strong></span><span className="demo-label">Simulated live bus</span></div>
+        <p>Poonamallee → Red Hills · 34.4 km road path</p>
+        <div className="mt-2 flex max-w-[34rem] gap-1 overflow-x-auto pb-1">{routeStops.map((stop) => <Button key={stop.name} size="sm" variant="ghost" onClick={() => selectStop(stop)} className={cn("shrink-0", selectedStop.name === stop.name && "bg-accent text-accent-foreground")}>{stop.name}</Button>)}</div>
+        <div className="mt-2 flex flex-wrap gap-1.5">{["All", "Critical", "Aging", "Healthy", "Overdue", "Coverage"].map((value) => <Button key={value} size="sm" variant="ghost" onClick={() => setFilter(value)} className={cn("h-7 px-2 text-[11px]", filter === value && "bg-foreground text-background")}>{value}</Button>)}</div>
+      </div>
+    </div>
+    <div className="absolute bottom-3 right-3 z-10 flex flex-col border border-border bg-background shadow-sm">
+      <Button variant="ghost" size="icon" onClick={() => mapRef.current?.setZoom((mapRef.current.getZoom() ?? 12) + 1)} aria-label="Zoom in"><Plus/></Button>
+      <Button variant="ghost" size="icon" onClick={() => mapRef.current?.setZoom((mapRef.current.getZoom() ?? 12) - 1)} aria-label="Zoom out"><Minus/></Button>
+      <Button variant="ghost" size="icon" onClick={() => selectStop(firstRouteStop)} aria-label="Locate Poonamallee"><LocateFixed/></Button>
+    </div>
+    {route && <div className="absolute right-3 top-20 z-10 hidden border border-border bg-background p-3 shadow-panel sm:block"><Button variant="ghost" size="icon" className="absolute right-1 top-1" aria-label="Hide route summary"><X/></Button><p className="eyebrow">Actual road corridor</p><strong className="mt-1 block text-sm">MTC route 62</strong><p className="text-xs text-muted-foreground">6 major stops shown</p></div>}
+  </div>;
+}
+
+export function Status({ status }: { status: string }) {
+  const normalized = status === "attention" ? "aging" : status;
+  return <span className={cn("status-badge", `status-${normalized}`)}><i/>{status.charAt(0).toUpperCase() + status.slice(1)}</span>;
+}
