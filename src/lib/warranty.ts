@@ -74,7 +74,7 @@ export type NotifCategory = "Critical road damage" | "New detection" | "Warranty
 export type NotifStatus = "Pending" | "Sent" | "Viewed" | "Acknowledged" | "Action Required" | "Resolved";
 export type Notification = { id: string; category: NotifCategory; recipient: "Municipality" | "Contractor" | "Admin"; to: string; title: string; message: string; incidentId?: string; segment?: string; time: string; status: NotifStatus };
 export type RepairStatus = "Requested" | "Acknowledged" | "Scheduled" | "In Progress" | "Completed" | "Awaiting Verification" | "Verified" | "Reopened";
-export type RepairCase = { id: string; incidentId: string; segment: string; contractorId?: string; owner: string; assigned: string; target: string; actual?: string; status: RepairStatus; notes: string; reviewer: string; verification?: { bus: string; confidence: number; result: string } };
+export type RepairCase = { id: string; incidentId: string; segment: string; contractorId?: string | undefined; owner: string; assigned: string; target: string; actual?: string | undefined; status: RepairStatus; notes: string; reviewer: string; verification?: undefined | { bus: string; confidence: number; result: string } };
 export type AuditEntry = { time: string; text: string; actor: string };
 
 type State = { settings: Settings; incidents: Incident[]; notifications: Notification[]; repairs: Record<string, RepairCase>; audit: Record<string, AuditEntry[]>; flags: Record<string, string[]> };
