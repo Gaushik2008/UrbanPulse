@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { BusFront, CircleAlert, LocateFixed, Minus, Plus, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { route62Defects, sendRepairAlert, useRepairAlerts, type Route62Defect } from "@/lib/route62-defects";
+import { roadSignDataUrl, RoadSignIcon } from "./RoadSign";
 
 type LatLng = { lat: number; lng: number };
 type MapInstance = {
@@ -10,13 +12,15 @@ type MapInstance = {
   setZoom: (zoom: number) => void;
   getZoom: () => number | undefined;
 };
-type MarkerInstance = { setPosition: (position: LatLng) => void; setMap: (map: MapInstance | null) => void };
+type MarkerInstance = { setPosition: (position: LatLng) => void; setMap: (map: MapInstance | null) => void; setIcon?: (icon: unknown) => void; addListener?: (event: string, fn: () => void) => void };
 type GoogleMapsApi = {
   Map: new (element: HTMLElement, options: Record<string, unknown>) => MapInstance;
   Marker: new (options: Record<string, unknown>) => MarkerInstance;
   Polyline: new (options: Record<string, unknown>) => { setMap: (map: MapInstance | null) => void };
   LatLngBounds: new () => { extend: (position: LatLng) => void };
   SymbolPath: { CIRCLE: unknown };
+  Size: new (w: number, h: number) => unknown;
+  Point: new (x: number, y: number) => unknown;
   geometry: { encoding: { decodePath: (encoded: string) => LatLng[] } };
 };
 
@@ -38,12 +42,6 @@ const routeStops = [
   { name: "Red Hills", position: { lat: 13.19, lng: 80.18 } },
 ];
 const firstRouteStop = { name: "Poonamallee", position: { lat: 13.0518, lng: 80.0949 } };
-
-const detectionPoints = [
-  { lat: 13.105, lng: 80.101 },
-  { lat: 13.135, lng: 80.157 },
-  { lat: 13.172, lng: 80.181 },
-];
 
 let mapsPromise: Promise<GoogleMapsApi> | null = null;
 function loadGoogleMaps() {
@@ -79,6 +77,15 @@ export function UrbanMap({ coverage = false, route = false, compact = false }: {
   const [query, setQuery] = useState("");
   const [selectedStop, setSelectedStop] = useState(firstRouteStop);
   const [loadError, setLoadError] = useState("");
+  const [selectedDefect, setSelectedDefect] = useState<Route62Defect | null>(null);
+  const defectMarkers = useRef<Record<string, MarkerInstance>>({});
+  const defectPositions = useRef<Record<string, LatLng>>({});
+  const alerts = useRepairAlerts();
+  useEffect(() => {
+    const maps = window.google?.maps;
+    if (!maps) return;
+    route62Defects.forEach((d) => defectMarkers.current[d.id]?.setIcon?.({ url: roadSignDataUrl(d.sign, Boolean(alerts[d.id])), scaledSize: new maps.Size(34, 32), anchor: new maps.Point(17, 30) }));
+  }, [alerts]);
 
   useEffect(() => {
     let active = true;
@@ -118,8 +125,13 @@ export function UrbanMap({ coverage = false, route = false, compact = false }: {
         });
         overlays.push(marker);
       });
-      detectionPoints.forEach((position) => {
-        const marker = new maps.Marker({ map, position, title: "Illustrative road detection", icon: { path: maps.SymbolPath.CIRCLE, scale: 7, fillColor: criticalColor, fillOpacity: 0.9, strokeColor: styles.getPropertyValue("--map-marker-ring").trim(), strokeWeight: 3 } });
+      route62Defects.forEach((defect) => {
+        const position = path[Math.min(path.length - 1, Math.floor(defect.along * path.length))];
+        if (!position) return;
+        defectPositions.current[defect.id] = position;
+        const marker = new maps.Marker({ map, position, zIndex: 20, title: `${defect.signLabel} · ${defect.issue} (illustrative)`, icon: { url: roadSignDataUrl(defect.sign), scaledSize: new maps.Size(34, 32), anchor: new maps.Point(17, 30) } });
+        marker.addListener?.("click", () => { setSelectedDefect(defect); map.panTo(position); });
+        defectMarkers.current[defect.id] = marker;
         overlays.push(marker);
       });
       const firstPathPoint = path[0];
@@ -182,6 +194,13 @@ export function UrbanMap({ coverage = false, route = false, compact = false }: {
       <Button variant="ghost" size="icon" onClick={() => mapRef.current?.setZoom((mapRef.current.getZoom() ?? 12) - 1)} aria-label="Zoom out"><Minus/></Button>
       <Button variant="ghost" size="icon" onClick={() => selectStop(firstRouteStop)} aria-label="Locate Poonamallee"><LocateFixed/></Button>
     </div>
+    {selectedDefect && <div className="absolute right-3 top-16 z-20 w-[min(20rem,calc(100%-1.5rem))] border border-border bg-background p-4 shadow-panel" role="dialog" aria-label={`${selectedDefect.issue} details`}>
+      <Button variant="ghost" size="icon" className="absolute right-1 top-1" aria-label="Close defect details" onClick={() => setSelectedDefect(null)}><X/></Button>
+      <div className="flex items-center gap-3 pr-8"><RoadSignIcon sign={selectedDefect.sign} alerted={Boolean(alerts[selectedDefect.id])} label={selectedDefect.signLabel} size={44}/><div><p className="eyebrow">{selectedDefect.id} · Route 62</p><strong className="block text-sm">{selectedDefect.issue}</strong><p className="text-xs text-muted-foreground">{selectedDefect.near}</p></div></div>
+      <dl className="detail-list mt-3"><div><dt>Severity</dt><dd>{selectedDefect.severity}</dd></div><div><dt>AI confidence</dt><dd>{selectedDefect.confidence}%</dd></div><div><dt>Consistent passes</dt><dd>{selectedDefect.passes}</dd></div><div><dt>Last seen</dt><dd>{selectedDefect.last} · {selectedDefect.bus}</dd></div></dl>
+      <Button className="mt-3 w-full" onClick={() => sendRepairAlert(selectedDefect)} disabled={Boolean(alerts[selectedDefect.id])}>{alerts[selectedDefect.id] ? `Alert sent at ${alerts[selectedDefect.id]}` : "Alert municipality to repair"}</Button>
+      <p className="mt-2 text-[11px] text-muted-foreground">Illustrative demo detection</p>
+    </div>}
     {route && <div className="absolute right-3 top-20 z-10 hidden border border-border bg-background p-3 shadow-panel sm:block"><Button variant="ghost" size="icon" className="absolute right-1 top-1" aria-label="Hide route summary"><X/></Button><p className="eyebrow">Actual road corridor</p><strong className="mt-1 block text-sm">MTC route 62</strong><p className="text-xs text-muted-foreground">6 major stops shown</p></div>}
   </div>;
 }
