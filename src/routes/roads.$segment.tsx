@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";import { RoadDetailPage } from "@/components/urbanpulse/WarrantyPages";
+export const Route=createFileRoute("/roads/$segment")({head:()=>({meta:[{title:"Road Segment — UrbanPulse"},{name:"description",content:"Road segment construction details, warranty timeline and open issues."},{property:"og:title",content:"Road Segment — UrbanPulse"},{property:"og:description",content:"Road segment construction details, warranty timeline and open issues."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:C});
+function C(){const p=Route.useParams();return <RoadDetailPage segment={p.segment}/>}
