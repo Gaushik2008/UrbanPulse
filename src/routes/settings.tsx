@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";import { SettingsPage } from "@/components/urbanpulse/WarrantyPages";
+export const Route=createFileRoute("/settings")({head:()=>({meta:[{title:"Settings — UrbanPulse"},{name:"description",content:"Configure warranty thresholds, notification and verification rules."},{property:"og:title",content:"Settings — UrbanPulse"},{property:"og:description",content:"Configure warranty thresholds, notification and verification rules."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:SettingsPage});
+

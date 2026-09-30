@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";import { RoadContractsPage } from "@/components/urbanpulse/WarrantyPages";
+export const Route=createFileRoute("/contracts")({head:()=>({meta:[{title:"Road Contracts — UrbanPulse"},{name:"description",content:"Construction, contractor and warranty records for each road segment."},{property:"og:title",content:"Road Contracts — UrbanPulse"},{property:"og:description",content:"Construction, contractor and warranty records for each road segment."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:RoadContractsPage});
+

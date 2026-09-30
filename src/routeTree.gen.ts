@@ -12,13 +12,22 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as CityMapRouteImport } from './routes/city-map'
+import { Route as ContractorsRouteImport } from './routes/contractors'
+import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as CoverageRouteImport } from './routes/coverage'
 import { Route as DetectionsRouteImport } from './routes/detections'
 import { Route as FleetRouteImport } from './routes/fleet'
+import { Route as IncidentsRouteImport } from './routes/incidents'
 import { Route as InspectionRouteImport } from './routes/inspection'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as OverviewRouteImport } from './routes/overview'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as VerificationRouteImport } from './routes/verification'
+import { Route as WarrantyRouteImport } from './routes/warranty'
+import { Route as ContractorsIdRouteImport } from './routes/contractors.$id'
 import { Route as DetectionsIdRouteImport } from './routes/detections.$id'
+import { Route as IncidentsIdRouteImport } from './routes/incidents.$id'
+import { Route as RoadsSegmentRouteImport } from './routes/roads.$segment'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -33,6 +42,16 @@ const AnalyticsRoute = AnalyticsRouteImport.update({
 const CityMapRoute = CityMapRouteImport.update({
   id: '/city-map',
   path: '/city-map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContractorsRoute = ContractorsRouteImport.update({
+  id: '/contractors',
+  path: '/contractors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContractsRoute = ContractsRouteImport.update({
+  id: '/contracts',
+  path: '/contracts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoverageRoute = CoverageRouteImport.update({
@@ -50,9 +69,19 @@ const FleetRoute = FleetRouteImport.update({
   path: '/fleet',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IncidentsRoute = IncidentsRouteImport.update({
+  id: '/incidents',
+  path: '/incidents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InspectionRoute = InspectionRouteImport.update({
   id: '/inspection',
   path: '/inspection',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OverviewRoute = OverviewRouteImport.update({
@@ -60,53 +89,105 @@ const OverviewRoute = OverviewRouteImport.update({
   path: '/overview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VerificationRoute = VerificationRouteImport.update({
   id: '/verification',
   path: '/verification',
   getParentRoute: () => rootRouteImport,
+} as any)
+const WarrantyRoute = WarrantyRouteImport.update({
+  id: '/warranty',
+  path: '/warranty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContractorsIdRoute = ContractorsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ContractorsRoute,
 } as any)
 const DetectionsIdRoute = DetectionsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => DetectionsRoute,
 } as any)
+const IncidentsIdRoute = IncidentsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => IncidentsRoute,
+} as any)
+const RoadsSegmentRoute = RoadsSegmentRouteImport.update({
+  id: '/roads/$segment',
+  path: '/roads/$segment',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/city-map': typeof CityMapRoute
+  '/contractors': typeof ContractorsRouteWithChildren
+  '/contracts': typeof ContractsRoute
   '/coverage': typeof CoverageRoute
   '/detections': typeof DetectionsRouteWithChildren
   '/fleet': typeof FleetRoute
+  '/incidents': typeof IncidentsRouteWithChildren
   '/inspection': typeof InspectionRoute
+  '/notifications': typeof NotificationsRoute
   '/overview': typeof OverviewRoute
+  '/settings': typeof SettingsRoute
   '/verification': typeof VerificationRoute
+  '/warranty': typeof WarrantyRoute
+  '/contractors/$id': typeof ContractorsIdRoute
   '/detections/$id': typeof DetectionsIdRoute
+  '/incidents/$id': typeof IncidentsIdRoute
+  '/roads/$segment': typeof RoadsSegmentRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/city-map': typeof CityMapRoute
+  '/contractors': typeof ContractorsRouteWithChildren
+  '/contracts': typeof ContractsRoute
   '/coverage': typeof CoverageRoute
   '/detections': typeof DetectionsRouteWithChildren
   '/fleet': typeof FleetRoute
+  '/incidents': typeof IncidentsRouteWithChildren
   '/inspection': typeof InspectionRoute
+  '/notifications': typeof NotificationsRoute
   '/overview': typeof OverviewRoute
+  '/settings': typeof SettingsRoute
   '/verification': typeof VerificationRoute
+  '/warranty': typeof WarrantyRoute
+  '/contractors/$id': typeof ContractorsIdRoute
   '/detections/$id': typeof DetectionsIdRoute
+  '/incidents/$id': typeof IncidentsIdRoute
+  '/roads/$segment': typeof RoadsSegmentRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/city-map': typeof CityMapRoute
+  '/contractors': typeof ContractorsRouteWithChildren
+  '/contracts': typeof ContractsRoute
   '/coverage': typeof CoverageRoute
   '/detections': typeof DetectionsRouteWithChildren
   '/fleet': typeof FleetRoute
+  '/incidents': typeof IncidentsRouteWithChildren
   '/inspection': typeof InspectionRoute
+  '/notifications': typeof NotificationsRoute
   '/overview': typeof OverviewRoute
+  '/settings': typeof SettingsRoute
   '/verification': typeof VerificationRoute
+  '/warranty': typeof WarrantyRoute
+  '/contractors/$id': typeof ContractorsIdRoute
   '/detections/$id': typeof DetectionsIdRoute
+  '/incidents/$id': typeof IncidentsIdRoute
+  '/roads/$segment': typeof RoadsSegmentRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -114,49 +195,83 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/city-map'
+    | '/contractors'
+    | '/contracts'
     | '/coverage'
     | '/detections'
     | '/fleet'
+    | '/incidents'
     | '/inspection'
+    | '/notifications'
     | '/overview'
+    | '/settings'
     | '/verification'
+    | '/warranty'
+    | '/contractors/$id'
     | '/detections/$id'
+    | '/incidents/$id'
+    | '/roads/$segment'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/analytics'
     | '/city-map'
+    | '/contractors'
+    | '/contracts'
     | '/coverage'
     | '/detections'
     | '/fleet'
+    | '/incidents'
     | '/inspection'
+    | '/notifications'
     | '/overview'
+    | '/settings'
     | '/verification'
+    | '/warranty'
+    | '/contractors/$id'
     | '/detections/$id'
+    | '/incidents/$id'
+    | '/roads/$segment'
   id:
     | '__root__'
     | '/'
     | '/analytics'
     | '/city-map'
+    | '/contractors'
+    | '/contracts'
     | '/coverage'
     | '/detections'
     | '/fleet'
+    | '/incidents'
     | '/inspection'
+    | '/notifications'
     | '/overview'
+    | '/settings'
     | '/verification'
+    | '/warranty'
+    | '/contractors/$id'
     | '/detections/$id'
+    | '/incidents/$id'
+    | '/roads/$segment'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyticsRoute: typeof AnalyticsRoute
   CityMapRoute: typeof CityMapRoute
+  ContractorsRoute: typeof ContractorsRouteWithChildren
+  ContractsRoute: typeof ContractsRoute
   CoverageRoute: typeof CoverageRoute
   DetectionsRoute: typeof DetectionsRouteWithChildren
   FleetRoute: typeof FleetRoute
+  IncidentsRoute: typeof IncidentsRouteWithChildren
   InspectionRoute: typeof InspectionRoute
+  NotificationsRoute: typeof NotificationsRoute
   OverviewRoute: typeof OverviewRoute
+  SettingsRoute: typeof SettingsRoute
   VerificationRoute: typeof VerificationRoute
+  WarrantyRoute: typeof WarrantyRoute
+  RoadsSegmentRoute: typeof RoadsSegmentRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -182,6 +297,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CityMapRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contractors': {
+      id: '/contractors'
+      path: '/contractors'
+      fullPath: '/contractors'
+      preLoaderRoute: typeof ContractorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contracts': {
+      id: '/contracts'
+      path: '/contracts'
+      fullPath: '/contracts'
+      preLoaderRoute: typeof ContractsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/coverage': {
       id: '/coverage'
       path: '/coverage'
@@ -203,11 +332,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FleetRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/incidents': {
+      id: '/incidents'
+      path: '/incidents'
+      fullPath: '/incidents'
+      preLoaderRoute: typeof IncidentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inspection': {
       id: '/inspection'
       path: '/inspection'
       fullPath: '/inspection'
       preLoaderRoute: typeof InspectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/overview': {
@@ -217,12 +360,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OverviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/verification': {
       id: '/verification'
       path: '/verification'
       fullPath: '/verification'
       preLoaderRoute: typeof VerificationRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/warranty': {
+      id: '/warranty'
+      path: '/warranty'
+      fullPath: '/warranty'
+      preLoaderRoute: typeof WarrantyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contractors/$id': {
+      id: '/contractors/$id'
+      path: '/$id'
+      fullPath: '/contractors/$id'
+      preLoaderRoute: typeof ContractorsIdRouteImport
+      parentRoute: typeof ContractorsRoute
     }
     '/detections/$id': {
       id: '/detections/$id'
@@ -231,8 +395,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DetectionsIdRouteImport
       parentRoute: typeof DetectionsRoute
     }
+    '/incidents/$id': {
+      id: '/incidents/$id'
+      path: '/$id'
+      fullPath: '/incidents/$id'
+      preLoaderRoute: typeof IncidentsIdRouteImport
+      parentRoute: typeof IncidentsRoute
+    }
+    '/roads/$segment': {
+      id: '/roads/$segment'
+      path: '/roads/$segment'
+      fullPath: '/roads/$segment'
+      preLoaderRoute: typeof RoadsSegmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
+
+interface ContractorsRouteChildren {
+  ContractorsIdRoute: typeof ContractorsIdRoute
+}
+
+const ContractorsRouteChildren: ContractorsRouteChildren = {
+  ContractorsIdRoute: ContractorsIdRoute,
+}
+
+const ContractorsRouteWithChildren = ContractorsRoute._addFileChildren(
+  ContractorsRouteChildren,
+)
 
 interface DetectionsRouteChildren {
   DetectionsIdRoute: typeof DetectionsIdRoute
@@ -246,16 +436,35 @@ const DetectionsRouteWithChildren = DetectionsRoute._addFileChildren(
   DetectionsRouteChildren,
 )
 
+interface IncidentsRouteChildren {
+  IncidentsIdRoute: typeof IncidentsIdRoute
+}
+
+const IncidentsRouteChildren: IncidentsRouteChildren = {
+  IncidentsIdRoute: IncidentsIdRoute,
+}
+
+const IncidentsRouteWithChildren = IncidentsRoute._addFileChildren(
+  IncidentsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
   CityMapRoute: CityMapRoute,
+  ContractorsRoute: ContractorsRouteWithChildren,
+  ContractsRoute: ContractsRoute,
   CoverageRoute: CoverageRoute,
   DetectionsRoute: DetectionsRouteWithChildren,
   FleetRoute: FleetRoute,
+  IncidentsRoute: IncidentsRouteWithChildren,
   InspectionRoute: InspectionRoute,
+  NotificationsRoute: NotificationsRoute,
   OverviewRoute: OverviewRoute,
+  SettingsRoute: SettingsRoute,
   VerificationRoute: VerificationRoute,
+  WarrantyRoute: WarrantyRoute,
+  RoadsSegmentRoute: RoadsSegmentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

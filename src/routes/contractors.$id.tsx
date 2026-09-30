@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";import { ContractorDetailPage } from "@/components/urbanpulse/WarrantyPages";
+export const Route=createFileRoute("/contractors/$id")({head:()=>({meta:[{title:"Contractor Profile — UrbanPulse"},{name:"description",content:"Projects, warranties, incidents and repairs for a contractor."},{property:"og:title",content:"Contractor Profile — UrbanPulse"},{property:"og:description",content:"Projects, warranties, incidents and repairs for a contractor."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:C});
+function C(){const p=Route.useParams();return <ContractorDetailPage id={p.id}/>}

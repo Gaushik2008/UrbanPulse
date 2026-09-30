@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";import { NotificationsPage } from "@/components/urbanpulse/WarrantyPages";
+export const Route=createFileRoute("/notifications")({head:()=>({meta:[{title:"Notifications — UrbanPulse"},{name:"description",content:"Alerts routed to the municipality, contractors and admins."},{property:"og:title",content:"Notifications — UrbanPulse"},{property:"og:description",content:"Alerts routed to the municipality, contractors and admins."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:NotificationsPage});
+

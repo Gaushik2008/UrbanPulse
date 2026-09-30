@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";import { IncidentDetailPage } from "@/components/urbanpulse/WarrantyPages";
+export const Route=createFileRoute("/incidents/$id")({head:()=>({meta:[{title:"Incident Detail — UrbanPulse"},{name:"description",content:"Unified incident record with evidence, contract, repair and audit log."},{property:"og:title",content:"Incident Detail — UrbanPulse"},{property:"og:description",content:"Unified incident record with evidence, contract, repair and audit log."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:C});
+function C(){const p=Route.useParams();return <IncidentDetailPage id={p.id}/>}
