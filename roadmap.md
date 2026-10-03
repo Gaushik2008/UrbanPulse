@@ -11,4 +11,3 @@
 - [x] Replace the illustrated city map with Google Maps
 - [x] Add Chennai bus 62 Poonamallee–Red Hills road route and simulated bus movement
 - [x] Add damage incidents, contractor/warranty records, notifications, repair verification and settings
-- [x] Optimize the Overview map with accurate illustrative defect placement, routes 154/25/M88, and working condition filters

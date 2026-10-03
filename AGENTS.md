@@ -12,4 +12,3 @@
 ## Project architecture
 
 - Render operational geography with Google Maps JavaScript using the public connector key; keep route geometry bundled and label vehicle movement simulated so the demo never implies a live transit feed.
-- Keep map filter semantics in a pure shared module so overlays and their regression tests use the same condition rules.
