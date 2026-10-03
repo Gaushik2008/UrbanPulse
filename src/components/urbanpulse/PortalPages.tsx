@@ -10,12 +10,13 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { route62Defects, sendRepairAlert, useRepairAlerts } from "@/lib/route62-defects";
 import { RoadSignIcon } from "./RoadSign";
+import { WarrantyKpis } from "./WarrantyPages";
 
 const kpis=[{l:"Road Network Observed",v:"72.4%",d:"+4.8% this week",good:true},{l:"Active Detections",v:"184",d:"32 high priority"},{l:"Coverage Gaps",v:"27",d:"requiring inspection"},{l:"Routes Monitored",v:"18",d:"of 24 active"},{l:"Verification Rate",v:"91%",d:"after repair",good:true}];
 export function OverviewPage(){return <AppShell title="UrbanPulse" subtitle="Continuous road intelligence from the city's moving fleet."><Page>
  <section className="kpi-strip">{kpis.map((k,i)=><div className="kpi" key={k.l}><div><p>{k.l}</p><strong>{k.v}</strong></div><span className={k.good?"text-success":""}>{k.d}</span>{i===0&&<div className="absolute inset-x-0 bottom-0 h-0.5 bg-success"/>}</div>)}</section>
  <section className="mt-6"><div className="section-heading"><div><p className="eyebrow">Live operational picture</p><h2>City Road Intelligence</h2></div><span className="flex items-center gap-2 text-xs text-muted-foreground"><span className="size-2 rounded-full bg-info"/>428 observations in the last hour</span></div><UrbanMap/></section>
- <div className="mt-6 grid gap-6 xl:grid-cols-[1.4fr_1fr]"><Pipeline/><FleetMini/></div>
+ <WarrantyKpis/><div className="mt-6 grid gap-6 xl:grid-cols-[1.4fr_1fr]"><Pipeline/><FleetMini/></div>
  </Page></AppShell>}
 export function CityMapPage(){return <AppShell title="City Map" subtitle="Explore road condition, observations and active field work."><Page><div className="section-heading"><div><p className="eyebrow">Operational GIS</p><h2>Live road network</h2></div><p className="text-sm text-muted-foreground">Select any highlighted road segment for context and recommended action.</p></div><UrbanMap/></Page></AppShell>}
 function Pipeline(){const steps=[BusFront,Camera,ScanLine,MapPin,Radar,Navigation,ShieldCheck]; const labels=["Bus","Capture","Validate","Locate","Prioritize","Inspect","Verify"];return <section className="panel"><div className="section-heading"><div><p className="eyebrow">Closed-loop intelligence</p><h3>From observation to verification</h3></div></div><div className="pipeline">{steps.map((Icon,i)=><div className="contents" key={labels[i]}><div className="pipeline-step"><span><Icon/></span><b>{labels[i]}</b></div>{i<steps.length-1&&<ArrowRight className="pipeline-arrow"/>}</div>)}</div></section>}

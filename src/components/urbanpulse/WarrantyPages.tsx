@@ -12,7 +12,7 @@ import {
 
 const wClass: Record<WarrantyState, string> = { active: "status-healthy", expiring: "status-aging", expired: "status-critical", unknown: "status-unknown" };
 const wText: Record<WarrantyState, string> = { active: "Warranty active", expiring: "Warranty expiring soon", expired: "Warranty expired", unknown: "Warranty unknown" };
-export function WarrantyBadge({ c }: { c?: RoadContract }) { const w = warrantyOf(c); return <span className={cn("status-badge", wClass[w.state])}><i />{wText[w.state]}</span>; }
+export function WarrantyBadge({ c }: { c?: RoadContract | undefined }) { const w = warrantyOf(c); return <span className={cn("status-badge", wClass[w.state])}><i />{wText[w.state]}</span>; }
 function Sev({ v }: { v: string }) { return <span className={cn("severity", `severity-${v.toLowerCase()}`)}>{v}</span>; }
 function Demo() { return <span className="demo-label">Illustrative data</span>; }
 function Head({ eyebrow, title, right }: { eyebrow: string; title: string; right?: ReactNode }) { return <div className="section-heading"><div><p className="eyebrow">{eyebrow}</p><h2>{title}</h2></div><div className="flex flex-wrap items-center gap-2">{right}<Demo /></div></div>; }
