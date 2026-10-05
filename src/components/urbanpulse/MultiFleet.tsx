@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { BusFront, Truck, Camera, Radar, ScanLine, MapPin, Gauge, ListOrdered, Route as RouteIcon, Wrench, RefreshCw, ShieldCheck, ArrowDown, ArrowRight, CheckCircle2, Play, RotateCcw, Building2, CircleHelp, Check } from "lucide-react";
+import { BusFront, Truck, Camera, Radar, ScanLine, MapPin, Gauge, ListOrdered, Route as RouteIcon, Wrench, RefreshCw, ShieldCheck, ArrowDown, ArrowRight, CheckCircle2, Play, Pause, RotateCcw, Building2, CircleHelp, Check, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import roadDefectImage from "@/assets/anna-salai-pothole.jpg";
+import repairedRoadImage from "@/assets/anna-salai-repaired.jpg";
 
 /* ---------------- Simulated fleet data ---------------- */
 export type Vehicle = { id: string; type: "Public Transit" | "Municipal Corporation"; route: string; observations: number; detections: number; contribution: number; telemetry: string; status: "Active" | "Idle" | "Offline"; segments: number };
@@ -152,19 +154,53 @@ export function WorkOrderStepper() {
   </section>;
 }
 
-/* ---------------- Run UrbanPulse demo ---------------- */
-const demoSteps = ["Vehicle moving on route 62", "Road camera detects pothole", "AI classification: pothole cluster", "Confidence 96%", "Second vehicle (MC-02) confirms", "GPS location determined", "Ward 15 · Avadi Zone authority determined", "Warranty checked: active", "Contractor identified: ABC Infrastructure", "Work order WO-1842 generated", "Repair completed", "Bus 04 revisits the location", "AI verifies repair"];
+/* ---------------- Road-camera video simulation ---------------- */
+const demoSteps = [
+  { title: "Route 62 observation", detail: "Bus 04 · Poonamallee High Road", phase: "OBSERVE", image: roadDefectImage },
+  { title: "Road anomaly detected", detail: "Potential pothole cluster isolated", phase: "DETECT", image: roadDefectImage, detect: true },
+  { title: "AI classification", detail: "Pothole cluster · confidence 96%", phase: "CLASSIFY", image: roadDefectImage, detect: true },
+  { title: "Cross-fleet confirmation", detail: "Municipal vehicle MC-02 confirms", phase: "VALIDATE", image: roadDefectImage, detect: true },
+  { title: "Road segment located", detail: "Ward 15 · Avadi Zone", phase: "LOCATE", image: roadDefectImage, detect: true },
+  { title: "Warranty matched", detail: "Active road contract identified", phase: "ROUTE", image: roadDefectImage, detect: true },
+  { title: "Municipality alerted", detail: "Work order WO-1842 generated", phase: "ACTION", image: roadDefectImage, detect: true },
+  { title: "Repair recorded", detail: "Field team marked work complete", phase: "REPAIR", image: repairedRoadImage },
+  { title: "Bus returns to segment", detail: "New Route 62 camera observation", phase: "RE-OBSERVE", image: repairedRoadImage },
+  { title: "Repair verified", detail: "No recurring defect · confidence 98%", phase: "VERIFIED", image: repairedRoadImage, verified: true },
+] as const;
 export function DemoRunner({ compact = false }: { compact?: boolean }) {
-  const [i, setI] = useState(-1);
+  const [i, setI] = useState(0);
+  const [playing, setPlaying] = useState(false);
   const t = useRef<ReturnType<typeof setInterval> | null>(null);
   useEffect(() => () => { if (t.current) clearInterval(t.current); }, []);
-  const run = () => { if (t.current) clearInterval(t.current); setI(0); t.current = setInterval(() => setI((x) => { if (x >= demoSteps.length) { clearInterval(t.current!); return x; } return x + 1; }), 900); };
-  const done = i >= demoSteps.length;
+  const stop = () => { if (t.current) clearInterval(t.current); t.current = null; setPlaying(false); };
+  const run = () => {
+    if (t.current) clearInterval(t.current);
+    if (i >= demoSteps.length - 1) setI(0);
+    setPlaying(true);
+    t.current = setInterval(() => setI((x) => {
+      if (x >= demoSteps.length - 1) { if (t.current) clearInterval(t.current); t.current = null; setPlaying(false); return x; }
+      return x + 1;
+    }), 1600);
+  };
+  const scene = demoSteps[i] ?? demoSteps[0];
+  const done = i === demoSteps.length - 1;
   return <section className={cn("panel", !compact && "p-6")}>
-    <div className="section-heading"><div><p className="eyebrow">Guided simulation</p><h3>Run UrbanPulse demo</h3></div><Button onClick={run}>{i < 0 ? <><Play />Run live demo</> : <><RotateCcw />Replay</>}</Button></div>
-    <div className="relative h-2 bg-secondary"><div className="absolute inset-y-0 left-0 bg-primary transition-all duration-700" style={{ width: `${Math.max(0, Math.min(i, demoSteps.length)) / demoSteps.length * 100}%` }} /><BusFront className="absolute -top-2 size-5 text-primary transition-all duration-700" style={{ left: `calc(${Math.max(0, Math.min(i, demoSteps.length)) / demoSteps.length * 100}% - 10px)` }} /></div>
-    <ol className="mt-5 grid gap-1.5 sm:grid-cols-2">{demoSteps.map((s, k) => <li key={s} className={cn("flex items-center gap-2 text-sm transition-all duration-300", k < i ? "text-foreground" : k === i ? "font-semibold text-primary" : "text-muted-foreground/50")}>{k < i ? <CheckCircle2 className="size-4 text-success" /> : <span className="grid size-4 place-items-center text-[10px] tabular-nums">{k + 1}</span>}{s}</li>)}</ol>
-    {done && <div className="mt-5 flex items-center gap-3 border border-success/30 bg-success-soft p-4 animate-in fade-in zoom-in-95"><ShieldCheck className="text-success" /><strong>✓ Road repair verified</strong><span className="ml-auto text-xs text-muted-foreground">Simulation · illustrative data</span></div>}
+    <div className="section-heading"><div><p className="eyebrow">Route 62 · road-camera simulation</p><h3>Detection to verified repair</h3></div><div className="flex items-center gap-2"><span className="demo-label">Illustrative footage</span><Button onClick={playing ? stop : run}>{playing ? <><Pause />Pause</> : done ? <><RotateCcw />Replay</> : <><Play />Play simulation</>}</Button></div></div>
+    <div className="simulation-player">
+      <img key={scene.image} src={scene.image} alt={scene.image === repairedRoadImage ? "Road-camera view after the simulated repair" : "Road-camera view of a detected pothole"} />
+      <div className="simulation-vignette" />
+      {scene.detect && <div className="simulation-detection-box"><span>POTHOLE · 96%</span></div>}
+      <div className="simulation-topbar"><span><i /> SIMULATED CAMERA · BUS 04</span><span>ROUTE 62 · AVADI ZONE</span></div>
+      <div className="simulation-readout"><span className={cn("simulation-phase", scene.verified && "simulation-phase-verified")}>{scene.phase}</span><strong>{scene.title}</strong><small>{scene.detail}</small></div>
+      <div className="simulation-telemetry"><span>13.0469° N · 80.1018° E</span><span><Volume2 /> Road audio</span><time>14:{String(31 + i).padStart(2, "0")}:0{Math.min(i, 9)}</time></div>
+    </div>
+    <div className="simulation-controls">
+      <Button size="icon" variant="outline" onClick={playing ? stop : run} aria-label={playing ? "Pause simulation" : "Play simulation"}>{playing ? <Pause /> : <Play />}</Button>
+      <input aria-label="Simulation position" type="range" min="0" max={demoSteps.length - 1} value={i} onChange={(event) => { stop(); setI(Number(event.target.value)); }} />
+      <span>{String(i * 2).padStart(2, "0")}:00 / 18:00</span>
+    </div>
+    <ol className="simulation-chapters">{demoSteps.map((step, index) => <li key={step.phase}><button type="button" onClick={() => { stop(); setI(index); }} className={cn(index === i && "is-active", index < i && "is-complete")} aria-label={`Show ${step.title}`}><span>{index < i ? <Check /> : index + 1}</span><small>{step.phase}</small></button></li>)}</ol>
+    <p className="mt-3 text-xs text-muted-foreground">Image-based real-time simulation using illustrative road-camera frames. It is not a live MTC or municipal camera feed.</p>
   </section>;
 }
 
