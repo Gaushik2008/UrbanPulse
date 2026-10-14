@@ -13,3 +13,4 @@
 - [x] Add damage incidents, contractor/warranty records, notifications, repair verification and settings
 - [ ] Replace guided text with an illustrative image simulation and verify playback on desktop and mobile
 - [ ] Generate actual video footage (blocked: insufficient workspace credits)
+- [ ] Check GitHub connection and explain automatic code sync
