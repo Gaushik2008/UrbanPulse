@@ -155,7 +155,7 @@ export function WorkOrderStepper() {
 }
 
 /* ---------------- Road-camera video simulation ---------------- */
-const demoSteps = [
+const demoSteps: { title: string; detail: string; phase: string; image: string; detect?: boolean; verified?: boolean }[] = [
   { title: "Route 62 observation", detail: "Bus 04 · Poonamallee High Road", phase: "OBSERVE", image: roadDefectImage },
   { title: "Road anomaly detected", detail: "Potential pothole cluster isolated", phase: "DETECT", image: roadDefectImage, detect: true },
   { title: "AI classification", detail: "Pothole cluster · confidence 96%", phase: "CLASSIFY", image: roadDefectImage, detect: true },
@@ -182,7 +182,8 @@ export function DemoRunner({ compact = false }: { compact?: boolean }) {
       return x + 1;
     }), 1600);
   };
-  const scene = demoSteps[i] ?? demoSteps[0];
+  const scene = demoSteps[i];
+  if (!scene) return null;
   const done = i === demoSteps.length - 1;
   return <section className={cn("panel", !compact && "p-6")}>
     <div className="section-heading"><div><p className="eyebrow">Route 62 · road-camera simulation</p><h3>Detection to verified repair</h3></div><div className="flex items-center gap-2"><span className="demo-label">Illustrative footage</span><Button onClick={playing ? stop : run}>{playing ? <><Pause />Pause</> : done ? <><RotateCcw />Replay</> : <><Play />Play simulation</>}</Button></div></div>
@@ -192,15 +193,15 @@ export function DemoRunner({ compact = false }: { compact?: boolean }) {
       {scene.detect && <div className="simulation-detection-box"><span>POTHOLE · 96%</span></div>}
       <div className="simulation-topbar"><span><i /> SIMULATED CAMERA · BUS 04</span><span>ROUTE 62 · AVADI ZONE</span></div>
       <div className="simulation-readout"><span className={cn("simulation-phase", scene.verified && "simulation-phase-verified")}>{scene.phase}</span><strong>{scene.title}</strong><small>{scene.detail}</small></div>
-      <div className="simulation-telemetry"><span>13.0469° N · 80.1018° E</span><span><Volume2 /> Road audio</span><time>14:{String(31 + i).padStart(2, "0")}:0{Math.min(i, 9)}</time></div>
+      <div className="simulation-telemetry"><span>13.0469° N · 80.1018° E</span><span>Silent simulation</span><time>14:{String(31 + i).padStart(2, "0")}:0{Math.min(i, 9)}</time></div>
     </div>
     <div className="simulation-controls">
       <Button size="icon" variant="outline" onClick={playing ? stop : run} aria-label={playing ? "Pause simulation" : "Play simulation"}>{playing ? <Pause /> : <Play />}</Button>
       <input aria-label="Simulation position" type="range" min="0" max={demoSteps.length - 1} value={i} onChange={(event) => { stop(); setI(Number(event.target.value)); }} />
-      <span>{String(i * 2).padStart(2, "0")}:00 / 18:00</span>
+      <span>00:{String(Math.round(i * 1.6)).padStart(2, "0")} / 00:14</span>
     </div>
-    <ol className="simulation-chapters">{demoSteps.map((step, index) => <li key={step.phase}><button type="button" onClick={() => { stop(); setI(index); }} className={cn(index === i && "is-active", index < i && "is-complete")} aria-label={`Show ${step.title}`}><span>{index < i ? <Check /> : index + 1}</span><small>{step.phase}</small></button></li>)}</ol>
-    <p className="mt-3 text-xs text-muted-foreground">Image-based real-time simulation using illustrative road-camera frames. It is not a live MTC or municipal camera feed.</p>
+    <ol className="simulation-chapters">{demoSteps.map((step, index) => <li key={step.phase}><Button variant="ghost" onClick={() => { stop(); setI(index); }} className={cn(index === i && "is-active", index < i && "is-complete")} aria-label={`Show ${step.title}`}><span>{index < i ? <Check /> : index + 1}</span><small>{step.phase}</small></Button></li>)}</ol>
+    <p className="mt-3 text-xs text-muted-foreground">Illustrative road images · synthetic detections and actions · no live MTC or municipal camera feed.</p>
   </section>;
 }
 
