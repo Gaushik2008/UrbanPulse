@@ -11,3 +11,6 @@
 - [x] Replace the illustrated city map with Google Maps
 - [x] Add Chennai bus 62 Poonamallee–Red Hills road route and simulated bus movement
 - [x] Add damage incidents, contractor/warranty records, notifications, repair verification and settings
+- [x] Replace guided text with an illustrative image simulation and verify playback on desktop and mobile
+- [ ] Generate actual video footage (blocked: insufficient workspace credits)
+- [ ] Connect GitHub through Lovable's GitHub menu (user action required; external sync not verified)

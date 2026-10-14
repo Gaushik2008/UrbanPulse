@@ -12,3 +12,4 @@
 ## Project architecture
 
 - Render operational geography with Google Maps JavaScript using the public connector key; keep route geometry bundled and label vehicle movement simulated so the demo never implies a live transit feed.
+- Keep image-based demonstration playback client-side and explicitly distinguish illustrative frames from live video, so camera and detection claims stay honest.
